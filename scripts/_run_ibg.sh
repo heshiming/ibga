@@ -22,7 +22,7 @@ function _wait_for_jauto {
 
 function _wait_for_main_window {
     _info "• waiting for main window ...\n"
-    local OUTPUT=$(_call_jauto_wait "get_windows?window_title=Interactive Brokers Gateway" 1)
+    local OUTPUT=$(_call_jauto_wait "get_windows?window_class=ibgateway" 1)
     readarray -t WINDOWS <<< "$OUTPUT"
     for WINDOW in "${WINDOWS[@]}"; do
         local -A PROPS="$(_jauto_parse_props $WINDOW)"
@@ -38,7 +38,7 @@ function _wait_for_main_window {
 
 
 function _login_toggle {
-    local OUTPUT=$(_call_jauto_wait "list_ui_components?window_title=Interactive Brokers Gateway")
+    local OUTPUT=$(_call_jauto_wait "list_ui_components?window_class=ibgateway")
     readarray -t COMPONENTS <<< "$OUTPUT"
     for COMPONENT in "${COMPONENTS[@]}"; do
         local -A PROPS="$(_jauto_parse_props $COMPONENT)"
@@ -55,7 +55,7 @@ function _login_toggle {
 
 
 function _login_type {
-    local OUTPUT=$(_call_jauto_wait "list_ui_components?window_title=Interactive Brokers Gateway")
+    local OUTPUT=$(_call_jauto_wait "list_ui_components?window_class=ibgateway")
     readarray -t COMPONENTS <<< "$OUTPUT"
     for COMPONENT in "${COMPONENTS[@]}"; do
         local -A PROPS="$(_jauto_parse_props $COMPONENT)"
@@ -72,7 +72,7 @@ function _login_type {
 
 
 function _login_click {
-    local OUTPUT=$(_call_jauto_wait "list_ui_components?window_title=Interactive Brokers Gateway")
+    local OUTPUT=$(_call_jauto_wait "list_ui_components?window_class=ibgateway")
     readarray -t COMPONENTS <<< "$OUTPUT"
     for COMPONENT in "${COMPONENTS[@]}"; do
         local -A PROPS="$(_jauto_parse_props $COMPONENT)"
@@ -206,7 +206,7 @@ function _login_option_check {
     if  [[ $CHECK_REGION -eq 1 ]] || \
         [[ $CHECK_TIMEZONE -eq 1 ]]; then
         _login_click "More Options"
-        local OUTPUT=$(_call_jauto "list_ui_components?window_title=Interactive Brokers Gateway")
+        local OUTPUT=$(_call_jauto "list_ui_components?window_class=ibgateway")
         readarray -t COMPONENTS <<< "$OUTPUT"
         for COMPONENT in "${COMPONENTS[@]}"; do
             local -A PROPS="$(_jauto_parse_props $COMPONENT)"
@@ -219,10 +219,10 @@ function _login_option_check {
     fi
 
     if [[ $CHECK_REGION -eq 1 ]]; then
-        _check_combobox "list_ui_components?window_title=Interactive Brokers Gateway" "Region" "$IB_REGION"
+        _check_combobox "list_ui_components?window_class=ibgateway" "Region" "$IB_REGION"
     fi
     if [[ $CHECK_TIMEZONE -eq 1 ]]; then
-        _check_combobox "list_ui_components?window_title=Interactive Brokers Gateway" "Time Zone" "$IB_TIMEZONE"
+        _check_combobox "list_ui_components?window_class=ibgateway" "Time Zone" "$IB_TIMEZONE"
     fi
 }
 
