@@ -39,7 +39,9 @@ MSG="----------------------------
 
     for (( i=5; i>0; i--)); do sleep 1 & wait; done
 
-    mkdir -p {$IBG_DIR,$IBG_SETTINGS_DIR}
+    sudo mkdir -p {$IBG_DIR,$IBG_SETTINGS_DIR}
+    sudo chown ibg:ibg "$IBG_DIR"
+    sudo chown ibg:ibg "$IBG_SETTINGS_DIR"
     ex=$(_ibg_installer_exists)
     if [ "$ex" = true ]; then
         _info "• will use the existing installer: $IBG_DIR/$INSTALLER_FN ...\n"

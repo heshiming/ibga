@@ -326,7 +326,8 @@ function __export_logs_by_date {
 
 
 function _export_logs {
-    mkdir -p "$IBGA_LOG_EXPORT_DIR"
+    sudo mkdir -p "$IBGA_LOG_EXPORT_DIR"
+    sudo chown ibg:ibg "$IBGA_LOG_EXPORT_DIR"
     _info "  - export logs, clicking menu File/$1 Logs ...\n"
     _click_menu "File/$1 Logs"
     local JAUTO_LOGS_DLG="list_ui_components?window_type=dialog&window_title=View Logs"
