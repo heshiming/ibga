@@ -14,6 +14,7 @@ source $(dirname "$BASH_SOURCE")/_run_ibg.sh
 
 sudo chown ibg:ibg "$IBG_DIR"
 sudo chown ibg:ibg "$IBG_SETTINGS_DIR"
+sudo chown ibg:ibg "$IBGA_LOG_EXPORT_DIR"
 
 MSG="------------------------------------------------
  Manager Startup / $(date)
