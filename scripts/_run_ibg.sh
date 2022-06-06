@@ -676,6 +676,15 @@ function __maintenance_export_logs {
 function _maintenance_cycle {
     _info "• entered maintenance cycle\n"
     while true; do
+        readarray -t RUNTIME <<< $(ps -p $IBG_PID -o etimes)
+        if [ ${RUNTIME[1]} -gt 86520 ]; then
+            _err "• IB Gateway has reached the maximum allowed runtime of 24H.\n"
+            _err "• IB Gateway has freezed.\n"
+            _err "• Forcefully terminating IB Gateway ...\n"
+            kill -9 $IBG_PID
+            sleep 10
+            break
+        fi
         IBG_INSTANCE=$(ps -A| grep $IBG_PID |wc -l)
         if [ $IBG_INSTANCE -eq 0 ]; then
             _info "• IB Gateway is no longer running, will restart ...\n"
