@@ -48,7 +48,7 @@ MSG="----------------------------
     else
         show_text 1024 768 "Downloading IBG installer ..." &
         local stpid="$!"
-        URL="https://download2.interactivebrokers.com/installers/ibgateway/latest-standalone/$INSTALLER_FN"
+        URL="${IB_INSTALLER_URL:-https://download2.interactivebrokers.com/installers/ibgateway/latest-standalone/$INSTALLER_FN}"
         _info "• downloading from $URL ...\n"
         curl -k "$URL" -# -o $IBG_DIR/$INSTALLER_FN
         chmod +x $IBG_DIR/$INSTALLER_FN
