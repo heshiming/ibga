@@ -260,7 +260,7 @@ function __export_logs_by_date {
     local DATES
     IFS=' ' read -ra DATES <<< "$5"
     local SEL_DATE=$6
-    local FILENAME_PREFIX="gateway"
+    local FILENAME_PREFIX=$(echo "$7" | tr '[:upper:]' '[:lower:]')
     local JAUTO_LOGS_DLG="list_ui_components?window_type=dialog&window_title=View Logs"
     local JAUTO_FILE_DLG="list_ui_components?window_type=dialog&window_title=Enter export filename"
     local JAUTO_MESSAGE="list_ui_components?window_type=dialog&is_active=1"
@@ -364,11 +364,11 @@ function _export_logs {
     if [ $N_DATES -gt 0 ]; then
         local DATE_IDX=$((N_DATES-1))
         local SEL_DATE="${DATES[$DATE_IDX]}"
-        __export_logs_by_date "$LIST_X" "$LIST_Y" "$EXPBTN_X" "$EXPBTN_Y" "${DATES[*]}" "$SEL_DATE"
+        __export_logs_by_date "$LIST_X" "$LIST_Y" "$EXPBTN_X" "$EXPBTN_Y" "${DATES[*]}" "$SEL_DATE" "$1"
         if [ $N_DATES -gt 1 ]; then
             DATE_IDX=$((N_DATES-2))
             SEL_DATE="${DATES[$DATE_IDX]}"
-            __export_logs_by_date "$LIST_X" "$LIST_Y" "$EXPBTN_X" "$EXPBTN_Y" "${DATES[*]}" "$SEL_DATE"
+            __export_logs_by_date "$LIST_X" "$LIST_Y" "$EXPBTN_X" "$EXPBTN_Y" "${DATES[*]}" "$SEL_DATE" "$1"
         fi
     fi
     _info "  - export logs, done.\n"
