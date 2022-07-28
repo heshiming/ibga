@@ -50,3 +50,6 @@ IBGA is <a href="https://www.interactivebrokers.com/en/trading/ibgateway-latest.
           - "15800:5800"
           - "4000:4000"
 
+## Contributing
+
+Bug reports and feature requests are welcome. But since the source code is dual-licensed, code contributions (i.e. pull requests) are not directly accepted at this point.
