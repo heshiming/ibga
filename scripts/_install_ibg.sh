@@ -1,4 +1,4 @@
-INSTALLER_FN=ibgateway-latest-standalone-linux-x64.sh
+INSTALLER_FN=ibgateway.sh
 
 source $(dirname "$BASH_SOURCE")/_env.sh
 source $(dirname "$BASH_SOURCE")/_utils.sh
@@ -48,7 +48,7 @@ MSG="----------------------------
     else
         show_text 1024 768 "Downloading IBG installer ..." &
         local stpid="$!"
-        URL="https://download2.interactivebrokers.com/installers/ibgateway/latest-standalone/$INSTALLER_FN"
+        URL="$IBG_DOWNLOAD_URL"
         _info "• downloading from $URL ...\n"
         curl -k "$URL" -# -o $IBG_DIR/$INSTALLER_FN
         chmod +x $IBG_DIR/$INSTALLER_FN

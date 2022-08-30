@@ -28,3 +28,5 @@ IBGA uses <a href="https://en.wikipedia.org/wiki/Environment_variable" target="_
 Arguments marked with an asterisk symbol (*) are required.
 
 Note that you must write the exact value for text arguments. For instance, `IB_LOGINTAB=IB API` will work. But `IB_LOGINTAB=IBAPI` or `IB_LOGINTAB=ib api` will not. Moreover, IB Gateway starts in the English language setting by default, which you should retain. Internal IBGA scripts read UI component and distinguish one button from another based on the text. The scripts only recognize English.
+
+Some environment variables (namely `IBG_DIR`, `IBG_SETTINGS_DIR`, `IBG_PORT_INTERNAL`, `IBG_PORT`, and `IBG_DOWNLOAD_URL`, not listed in the table above) determine how IBGA works internally. They support overriding via Docker Compose configurations. That is, they come with a default value suitable for common usage. But you get to customize how the container works if you need to control how a particular aspect works. Please refer to the source code of [_env.sh](https://github.com/heshiming/ibga/blob/master/scripts/_env.sh) for details.
