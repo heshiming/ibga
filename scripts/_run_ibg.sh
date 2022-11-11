@@ -63,6 +63,7 @@ function _login_type {
             [ "${PROPS['editable']}" == "y" ]; then
             xdotool mousemove ${PROPS["mx"]} ${PROPS["my"]} click 1
             sleep 0.25
+            xdotool key ctrl+a BackSpace
             xdotool type $2
             sleep 0.25
             break
@@ -452,6 +453,36 @@ function __maintenance_handle_paper_trading_warning {
 }
 
 
+function __maintenance_handle_general_warning {
+    local JAUTO_ARGS="list_ui_components?window_class=feature.messages.&window_type=dialog"
+    local DIALOGS=$(_call_jauto "$JAUTO_ARGS")
+    if [ "$DIALOGS" != "none" ]; then
+        OUTPUT=$(_call_jauto "$JAUTO_ARGS")
+        readarray -t COMPONENTS <<< "$OUTPUT"
+        local DIALOG_TEXT=''
+        local DIALOG_OK_X=0
+        local DIALOG_OK_Y=0
+        for COMPONENT in "${COMPONENTS[@]}"; do
+            local -A PROPS="$(_jauto_parse_props $COMPONENT)"
+            if  [ "${PROPS['F1']}" == "javax.swing.JTextPane" ] && \
+                [ ! -z "${PROPS['text']}" ]; then
+                DIALOG_TEXT+="${PROPS['text']}"
+            fi
+            if  [ "${PROPS['F1']}" == "javax.swing.JButton" ] && \
+                [ "${PROPS['text']}" == "OK" ]; then
+                DIALOG_OK_X="${PROPS['mx']}"
+                DIALOG_OK_Y="${PROPS['my']}"
+            fi
+        done
+        if  [ ${#DIALOG_TEXT} -gt 0 ]; then
+            _info "  - handle general warning: $DIALOG_TEXT\n"
+            _info "    clicking OK at $DIALOG_OK_X,$DIALOG_OK_Y ...\n"
+            xdotool mousemove $DIALOG_OK_X $DIALOG_OK_Y click 1
+        fi
+    fi
+}
+
+
 function __maintenance_handle_welcome {
     local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.feature.welcome.")
     if [ "$OUTPUT" != "none" ]; then
@@ -474,16 +505,35 @@ function __maintenance_handle_welcome {
             G_WELCOME_MESSAGE="$message"
             _info "  - welcome: $message\n"
         fi
+        local OUTPUT=$(_call_jauto "get_windows?window_class=twslaunch.jauthentication&window_type=dialog")
+        if [ "$OUTPUT" != "none" ]; then
+            _err "!!! IB Gateway is waiting for two-factor authentication !!!\n"
+        fi
     else
         if [ $G_WELCOME_MESSAGE_DONE -eq 1 ]; then
-            G_WELCOME_MESSAGE_DONE=2
+            G_LOGIN_AGAIN=0
+            # find existence of login window
+            local OUTPUT=$(_call_jauto_wait "list_ui_components?window_class=ibgateway")
+            readarray -t COMPONENTS <<< "$OUTPUT"
+            for COMPONENT in "${COMPONENTS[@]}"; do
+                local -A PROPS="$(_jauto_parse_props $COMPONENT)"
+                if  [ "${PROPS['F1']}" == "javax.swing.JToggleButton" ] && \
+                    [ "${PROPS['text']}" == "IB API" ]; then
+                    G_LOGIN_AGAIN=1
+                    break
+                fi
+            done
+
+            if [ $G_LOGIN_AGAIN -eq 0 ]; then
+                G_WELCOME_MESSAGE_DONE=2
+            fi
         fi
     fi
 }
 
 
 function __maintenance_check_options {
-    SKIP_CHECK="$IBG_SETTINGS_DIR/skip_option_check"
+    SKIP_CHECK="$IBG_SETTINGS_DIR/skip_option_check2"
     if [ -f $SKIP_CHECK ]; then
         _info "  - option check skipped, to perform again remove $SKIP_CHECK\n"
         G_OPTION_ESSENTIAL_DONE=2
@@ -558,10 +608,10 @@ function __maintenance_check_options {
                         sleep 0.25
                     fi
             elif    [ "${PROPS['F1']}" == "javax.swing.JRadioButton" ] && \
-                    [ "${PROPS['text']}" == "Auto logoff" ] && \
+                    [ "${PROPS['text']}" == "Auto restart" ] && \
                     [ "${PROPS['selected']}" != "y" ]; then
                     # stick to shutdown instead of restart
-                    _info "  - option check, clicking Auto logoff ...\n"
+                    _info "  - option check, clicking Auto restart ...\n"
                     SETTINGS_CHANGED=1
                     xdotool mousemove ${PROPS["mx"]} ${PROPS["my"]} click 1
                     sleep 0.25
@@ -652,7 +702,9 @@ function __maintenance_check_options {
     fi
     if [ $SETTINGS_CHANGED -eq 1 ]; then
         _info "  - option check, confirming settings change ...\n"
-        xdotool mousemove $APPLY_X $APPLY_Y click 1 mousemove $OK_X $OK_Y click 1
+        xdotool mousemove $APPLY_X $APPLY_Y click 1
+        __maintenance_handle_general_warning
+        xdotool mousemove $OK_X $OK_Y click 1
     else
         _info "  - option check, no settings change necessary.\n"
         xdotool mousemove $CANCEL_X $CANCEL_Y click 1
@@ -676,18 +728,20 @@ function __maintenance_export_logs {
 function _maintenance_cycle {
     _info "• entered maintenance cycle\n"
     while true; do
-        readarray -t RUNTIME <<< $(ps -p $IBG_PID -o etimes)
-        if [ ${#RUNTIME[@]} -gt 1 ]; then
-            if [ ${RUNTIME[1]} -gt 86520 ]; then
-                _err "• IB Gateway has reached the maximum allowed runtime of 24H.\n"
-                _err "• IB Gateway has freezed.\n"
-                _err "• Forcefully terminating IB Gateway ...\n"
-                kill -9 $IBG_PID
-                sleep 10
-                break
-            fi
-        fi
-        IBG_INSTANCE=$(ps -A| grep $IBG_PID |wc -l)
+        # Freeze termination disabled in response to forced two-factor login.
+        # TODO: Research for a better solution.
+        # readarray -t RUNTIME <<< $(ps -p $IBG_PID -o etimes)
+        # if [ ${#RUNTIME[@]} -gt 1 ]; then
+        #     if [ ${RUNTIME[1]} -gt 86520 ]; then
+        #         _err "• IB Gateway has reached the maximum allowed runtime of 24H.\n"
+        #         _err "• IB Gateway has freezed.\n"
+        #         _err "• Forcefully terminating IB Gateway ...\n"
+        #         kill -9 $IBG_PID
+        #         sleep 10
+        #         break
+        #     fi
+        # fi
+        IBG_INSTANCE=$(ps -A| grep java |wc -l)
         if [ $IBG_INSTANCE -eq 0 ]; then
             _info "• IB Gateway is no longer running, will restart ...\n"
             break
@@ -702,6 +756,10 @@ function _maintenance_cycle {
             __maintenance_handle_welcome
         else
             G_LOGIN_FAILED=2
+        fi
+        if [ $G_LOGIN_AGAIN -eq 1 ]; then
+            _info "• breaking out of maintenance cycle because login is needed again\n"
+            break
         fi
         if  [ $G_PAPER_TRADING_WARNING_DONE -eq 2 ] && \
             [ $G_WELCOME_MESSAGE_DONE -eq 2 ] && \
@@ -746,11 +804,6 @@ MSG="---------------------------------------------------
         rm -f $JAUTO_INPUT
         G_FATAL_ERROR=""
         G_PAPER_TRADING_WARNING_DONE=2
-        G_WELCOME_MESSAGE_DONE=0
-        G_OPTION_ESSENTIAL_DONE=0
-        G_LOG_EXPORT_DONE=0
-        G_LOGIN_FAILED=0
-        G_WELCOME_MESSAGE=""
         if [ "$IB_LOGINTYPE" == "Paper Trading" ]; then
             G_PAPER_TRADING_WARNING_DONE=0
         fi
@@ -763,20 +816,32 @@ MSG="---------------------------------------------------
         _wait_for_jauto
         _wait_for_main_window
 
-        _info "• filling in login form ...\n"
-        _login_toggle "$IB_LOGINTAB"
-        _login_toggle "$IB_LOGINTYPE"
-        _login_type "javax.swing.JTextField" "$IB_USERNAME"
-        _login_type "javax.swing.JPasswordField" "$IB_PASSWORD"
-        _login_option_check
-        _info "• logging in ...\n"
-        if [ "$IB_LOGINTYPE" == "Paper Trading" ]; then
-            _login_click "Paper Log In"
-        else
-            _login_click "Log In"
-        fi
+        while true; do
+            G_WELCOME_MESSAGE_DONE=0
+            G_OPTION_ESSENTIAL_DONE=0
+            G_LOG_EXPORT_DONE=0
+            G_LOGIN_FAILED=0
+            G_LOGIN_AGAIN=0
+            G_WELCOME_MESSAGE=""
+            _info "• filling in login form ...\n"
+            _login_toggle "$IB_LOGINTAB"
+            _login_toggle "$IB_LOGINTYPE"
+            _login_type "javax.swing.JTextField" "$IB_USERNAME"
+            _login_type "javax.swing.JPasswordField" "$IB_PASSWORD"
+            _login_option_check
+            _info "• logging in ...\n"
+            if [ "$IB_LOGINTYPE" == "Paper Trading" ]; then
+                _login_click "Paper Log In"
+            else
+                _login_click "Log In"
+            fi
 
-        _maintenance_cycle
+            _maintenance_cycle
+
+            if  [ $G_LOGIN_AGAIN -ne 1 ]; then
+                break;
+            fi
+        done
 
         if  [ "$G_FATAL_ERROR" != "" ]; then
             _info "• cannot continue due to fatal error: $G_FATAL_ERROR\n"
