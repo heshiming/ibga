@@ -483,6 +483,24 @@ function __maintenance_handle_general_warning {
 }
 
 
+function __maintenance_handle_relogin_warning {
+    local JAUTO_ARGS="list_ui_components?window_class=twslaunch.jconnection.aW&window_type=dialog"
+    local DIALOGS=$(_call_jauto "$JAUTO_ARGS")
+    if [ "$DIALOGS" != "none" ]; then
+        OUTPUT=$(_call_jauto "$JAUTO_ARGS")
+        readarray -t COMPONENTS <<< "$OUTPUT"
+        for COMPONENT in "${COMPONENTS[@]}"; do
+            local -A PROPS="$(_jauto_parse_props $COMPONENT)"
+            if  [ "${PROPS['F1']}" == "javax.swing.JButton" ] && \
+                [ "${PROPS['text']}" == "Re-login" ]; then
+                _info "  - handle relogin warning by allowing ...\n"
+                xdotool mousemove ${PROPS['mx']} ${PROPS['my']} click 1
+            fi
+        done
+    fi
+}
+
+
 function __maintenance_handle_welcome {
     local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.feature.welcome.")
     if [ "$OUTPUT" != "none" ]; then
@@ -505,9 +523,57 @@ function __maintenance_handle_welcome {
             G_WELCOME_MESSAGE="$message"
             _info "  - welcome: $message\n"
         fi
+        # handle two-factor authentication
         local OUTPUT=$(_call_jauto "get_windows?window_class=twslaunch.jauthentication&window_type=dialog")
         if [ "$OUTPUT" != "none" ]; then
             _err "!!! IB Gateway is waiting for two-factor authentication !!!\n"
+        fi
+        if [ "$IB_PREFER_IBKEY" == "true" ]; then
+            local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jauthentication.bc&window_type=dialog")
+            if [ "$OUTPUT" != "none" ]; then
+                readarray -t COMPONENTS <<< "$OUTPUT"
+                for COMPONENT in "${COMPONENTS[@]}"; do
+                    if  [ "${PROPS['F1']}" == "javax.swing.JList" ]; then
+                        xdotool mousemove ${PROPS["mx"]} ${PROPS["my"]} click 1
+                    fi
+                done
+            fi
+            sleep 0.25
+            local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jauthentication.bc&window_type=dialog")
+            if [ "$OUTPUT" != "none" ]; then
+                readarray -t COMPONENTS <<< "$OUTPUT"
+                local CIDX=-1
+                local TIDX=-1
+                for COMPONENT in "${COMPONENTS[@]}"; do
+                    local -A PROPS="$(_jauto_parse_props $COMPONENT)"
+                    if  [ "${PROPS['F1']}" == "javax.swing.JList(row)" ] && \
+                        [ "${PROPS['selected']}" == "y" ]; then
+                        CIDX="${PROPS['F2']}"
+                    fi
+                    if  [ "${PROPS['F1']}" == "javax.swing.JList(row)" ] && \
+                        [ "${PROPS['text']}" == " IB Key" ]; then
+                        TIDX="${PROPS['F2']}"
+                    fi
+                done
+                if  [[ $CIDX -ge 0 ]] && \
+                    [[ $TIDX -ge 0 ]]; then
+                    local ACTION_KEY KEY_COUNT
+                    read ACTION_KEY KEY_COUNT <<< $(__calc_key_action $CIDX $TIDX)
+                    if [[ $KEY_COUNT -gt 0 ]]; then
+                        local KEY_SEQ=$(repl "$ACTION_KEY " $KEY_COUNT)
+                        xdotool key $KEY_SEQ
+                    fi
+                    sleep 0.25
+                    for COMPONENT in "${COMPONENTS[@]}"; do
+                        local -A PROPS="$(_jauto_parse_props $COMPONENT)"
+                        if  [ "${PROPS['F1']}" == "javax.swing.JButton" ] && \
+                            [ "${PROPS['text']}" == "OK" ]; then
+                            _info "  - two-factor auth, forcing IB Key ...\n"
+                            xdotool mousemove ${PROPS["mx"]} ${PROPS["my"]} click 1
+                        fi
+                    done
+                fi
+            fi
         fi
     else
         if [ $G_WELCOME_MESSAGE_DONE -eq 1 ]; then
@@ -787,6 +853,7 @@ function _maintenance_cycle {
         else
             sleep 2
         fi
+        __maintenance_handle_relogin_warning
     done
 }
 
