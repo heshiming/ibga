@@ -41,7 +41,7 @@ IB Gateway is designed to restart everyday. It does so by letting you choose a f
 IBGA handles daily restarts by:
 
 1. Passing `docker-compose.yml` to IB Gateway via simulating user interface actions.
-2. Forcing the "Auto logoff" option, instead of "Auto restart"
+2. Forcing the "Auto restart" option, so that two-factor authentication state persists for a week.
 3. Detect whether IBG is still running every 5 seconds, and start it again if not.
 
 It is important to understand that the settings in the above screenshots are managed by IBGA and should not be manually altered.

@@ -9,6 +9,8 @@ nav_order: 0
 
 IBGA is <a href="https://www.interactivebrokers.com/en/trading/ibgateway-latest.php" target="_blank">IB Gateway</a> in headless mode. It is a container image preloaded with scripts for automating user interactions with IBG.
 
+Now with second factor authentication support!
+
 <img src="images/ibga-video.gif">
 
 ## Benefits:
@@ -21,6 +23,7 @@ IBGA is <a href="https://www.interactivebrokers.com/en/trading/ibgateway-latest.
 * Automatic daily export of logs
 * Retaining of settings after an upgrade
 * A disposable container design
+* <a href="faq.html#how-is-two-factor-authentication-interactive-brokers-secure-login-system-sls-handled-in-ibga">Support two-factor authentication</a> (as of Nov 11, 2022)
 
 ## Under the hood:
 * IBGA runs in a set of bash scripts.

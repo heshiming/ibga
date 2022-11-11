@@ -39,11 +39,19 @@ Technically, IBC is a Java program hosting the IB Gateway main class. Certain as
 
 ---
 
-## Can IBGA handle two-factor logins (Interactive Brokers Secure Login System SLS)?
+## How is two-factor authentication (Interactive Brokers Secure Login System SLS) handled in IBGA?
 
-Unfortunately no, as two-factor login negates the purpose of automation. You can, however, still run IBGA, only that you have to manually type in your two-factor login code at VNC upon each daily restart.
+Interactive Brokers now enforces two-factor authentication for trading. As a result, IBGA's login procedure can no longer be fully automated. The easiest second factor (whether you have a physical password device or not) is to configure IB Key on your phone (<a href="https://guides.interactivebrokers.com/iphone/log_in/activating_ios.htm" target="_blank">iPhone</a>, <a href="https://guides.interactivebrokers.com/androidphone/log_in/activating_ios.htm" target="_blank">Android</a> Guide). Once this is configured, you will see the following IBGA screen (via VNC) upon login, right after IBGA automatically enters the password.
 
-At Interactive Brokers account management, you can <a href="https://guides.interactivebrokers.com/cp/am/settings/slsoptout.htm" target="_blank">choose to opt-out two-factor login just for trading, but maintain it for client portal</a>.
+<img src="images/two-factor-auth.png" width="500">
+
+Your phone will receive a push notification where you can tap and allow the login.
+
+IBGA can support physical password devices too, in which case, you have to open up the VNC in a browser (generally a computer is preferred over a phone) to enter the password according to instructions.
+
+In both scenarios, the confirmation has to be done within 2 minutes. If you didn't complete the login, IBG will return to the initial login screen.
+
+Note that if you have more than one device (for instance, an IB Key on phone and a physical device), you will be presented with a choice, in which case, you have to open up the VNC in a browser and choose "IB Key" before you receive a push notification. By default, IBGA will not touch second factor device choices. But by [setting IB_PREFER_IBKEY environment variable to "true"](references/config-args.md#IB_PREFER_IBKEY), IBGA will automatically choose IB Key when there are more than one choices, enabling simple confirmation without VNC.
 
 ---
 

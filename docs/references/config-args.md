@@ -24,6 +24,7 @@ IBGA uses <a href="https://en.wikipedia.org/wiki/Environment_variable" target="_
 | <a name="IBGA_VNC_PASSWORD">`IBGA_VNC_PASSWORD`</a> | Set a password for VNC. The length of the password is between 1-8 characters. If more than 8 are provided, it will get truncated. **Setting a VNC password is not an adequate measure to prevent unwanted access. For more information, please refer to [Security](security.md#vnc-password-and-a-false-sense-of-security).** |
 | <a name="IBGA_EXPORT_LOGS">`IBGA_EXPORT_LOGS`</a> | When set to `true`, IBGA will export today's and yesterday's Gateway and API logs to the location specified by `IBGA_LOG_EXPORT_DIR`. |
 | <a name="IBGA_LOG_EXPORT_DIR">`IBGA_LOG_EXPORT_DIR`</a> | Specify the container-aspect directory to export logs into. When this variable is not set, IBGA will use a subdirectory of the settings dir `/home/ibg_settings/exported_logs`. |
+| <a name="IB_PREFER_IBKEY">`IB_PREFER_IBKEY`</a> | Set to "true" to allow automatic selection of "IB Key" when there are multiple choices of two-factor authentication devices. |
 
 Arguments marked with an asterisk symbol (*) are required.
 
