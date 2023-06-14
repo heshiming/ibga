@@ -238,6 +238,9 @@ function _click_menu {
             CMENU="$CMENU/$MP"
         fi
         local OUTPUT=$(_call_jauto "list_menu?window_title=IB Gateway")
+        if [ "$OUTPUT" == "none" ]; then
+            OUTPUT=$(_call_jauto "list_menu?window_title=IBKR Gateway")
+        fi
         if [ "$OUTPUT" != "none" ]; then
             readarray -t COMPONENTS <<< "$OUTPUT"
             for COMPONENT in "${COMPONENTS[@]}"; do
