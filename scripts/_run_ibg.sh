@@ -526,6 +526,22 @@ function __maintenance_handle_welcome {
             G_WELCOME_MESSAGE="$message"
             _info "  - welcome: $message\n"
         fi
+        # handle existing session detected
+        local OUTPUT=$(_call_jauto "get_windows?window_class=twslaunch.jconnection.aM&window_type=dialog")
+        if [ "$OUTPUT" != "none" ]; then
+            _info "  - existing session detected, will kick it out\n"
+            local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jconnection.aM&window_type=dialog")
+            if [ "$OUTPUT" != "none" ]; then
+                readarray -t COMPONENTS <<< "$OUTPUT"
+                for COMPONENT in "${COMPONENTS[@]}"; do
+                    local -A PROPS="$(_jauto_parse_props $COMPONENT)"
+                    if  [ "${PROPS['F1']}" == "javax.swing.JButton" ] && \
+                        [ "${PROPS['text']}" == "Continue Login" ]; then
+                        xdotool mousemove ${PROPS["mx"]} ${PROPS["my"]} click 1
+                    fi
+                done
+            fi
+        fi
         # handle two-factor authentication
         local OUTPUT=$(_call_jauto "get_windows?window_class=twslaunch.jauthentication&window_type=dialog")
         if [ "$OUTPUT" != "none" ]; then
@@ -536,6 +552,7 @@ function __maintenance_handle_welcome {
             if [ "$OUTPUT" != "none" ]; then
                 readarray -t COMPONENTS <<< "$OUTPUT"
                 for COMPONENT in "${COMPONENTS[@]}"; do
+                    local -A PROPS="$(_jauto_parse_props $COMPONENT)"
                     if  [ "${PROPS['F1']}" == "javax.swing.JList" ]; then
                         xdotool mousemove ${PROPS["mx"]} ${PROPS["my"]} click 1
                     fi
