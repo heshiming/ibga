@@ -1,4 +1,4 @@
-FROM openjdk:18-slim-bullseye AS jauto_build
+FROM eclipse-temurin:22-jammy AS jauto_build
 USER root
 RUN apt-get update && \
     apt-get install -y --no-install-recommends curl cmake gcc g++ make libc-dev && \
@@ -13,7 +13,7 @@ RUN tar xfz jauto.tar.gz && \
     cmake ../jauto-$JAUTO_VER && \
     cmake --build .
 
-FROM debian:bullseye-slim AS util_build
+FROM debian:bookworm-slim AS util_build
 USER root
 RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc libx11-dev libc-dev && \
@@ -23,7 +23,7 @@ ADD utils /tmp/utils
 WORKDIR /tmp/utils
 RUN gcc show_text.c -O2 -lX11 -o show_text
 
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 USER root
 RUN apt-get update && \
     apt-get install -y --no-install-recommends curl sudo ed xvfb x11vnc x11-utils xdotool socat python3-websockify procps xfonts-scalable tzdata && \
