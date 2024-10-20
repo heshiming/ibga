@@ -26,7 +26,7 @@ RUN gcc show_text.c -O2 -lX11 -o show_text
 FROM debian:bookworm-slim
 USER root
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl sudo ed xvfb x11vnc x11-utils xdotool socat python3-websockify procps xfonts-scalable tzdata && \
+    apt-get install -y --no-install-recommends curl sudo ed xvfb x11vnc x11-utils xdotool socat python3-websockify procps xfonts-scalable tzdata oathtool && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 RUN useradd -ms /bin/bash -u 2000 ibg && \

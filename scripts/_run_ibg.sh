@@ -542,6 +542,44 @@ function __maintenance_handle_welcome {
                 done
             fi
         fi
+        # handle Mobile Authenticator app code
+        if [ ! -z "$TOTP_KEY" ]; then
+            local OUTPUT=$(_call_jauto "get_windows?window_class=twslaunch.jutils.aO&window_type=dialog")
+            if [ "$OUTPUT" != "none" ]; then
+                local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jutils.aO&window_type=dialog")
+                if [ "$OUTPUT" != "none" ]; then
+                    _info "  - handling TOTP Mobile Authenticator\n"
+                    readarray -t COMPONENTS <<< "$OUTPUT"
+                    local RUN_OTP=0
+                    local ACCEPT_OTP=0
+                    for COMPONENT in "${COMPONENTS[@]}"; do
+                        local -A PROPS="$(_jauto_parse_props $COMPONENT)"
+                        if  [ "${PROPS['F1']}" == "javax.swing.JLabel" ] && \
+                            [[ "${PROPS['text']}" == *"Enter"* ]]; then
+                            RUN_OTP=1
+                            _info "    TOTP form identified\n"
+                        fi
+                        if  [ "${PROPS['F1']}" == "javax.swing.JTextField" ] && \
+                            [ "${PROPS['editable']}" == "y" ] && \
+                            [ "$RUN_OTP" == 1 ]; then
+                            xdotool mousemove ${PROPS["mx"]} ${PROPS["my"]} click 1
+                            TOTP_ANSWER=$(oathtool --totp -b "$TOTP_KEY")
+                            sleep 0.25
+                            xdotool type $TOTP_ANSWER
+                            _info "    TOTP answer entered\n"
+                            sleep 0.25
+                            ACCEPT_OTP=1
+                        fi
+                        if  [ "${PROPS['F1']}" == "javax.swing.JButton" ] && \
+                            [ "${PROPS['text']}" == "OK" ] &&
+                            [ "$ACCEPT_OTP" == 1 ]; then
+                            xdotool mousemove ${PROPS["mx"]} ${PROPS["my"]} click 1
+                            _info "    TOTP OK clicked\n"
+                        fi
+                    done
+                fi
+            fi
+        fi
         # handle two-factor authentication
         local OUTPUT=$(_call_jauto "get_windows?window_class=twslaunch.jauthentication&window_type=dialog")
         if [ "$OUTPUT" != "none" ]; then
