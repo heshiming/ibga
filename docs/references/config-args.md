@@ -25,8 +25,9 @@ IBGA uses <a href="https://en.wikipedia.org/wiki/Environment_variable" target="_
 | <a name="IBGA_EXPORT_LOGS">`IBGA_EXPORT_LOGS`</a> | When set to `true`, IBGA will export today's and yesterday's Gateway and API logs to the location specified by `IBGA_LOG_EXPORT_DIR`. |
 | <a name="IBGA_LOG_EXPORT_DIR">`IBGA_LOG_EXPORT_DIR`</a> | Specify the container-aspect directory to export logs into. When this variable is not set, IBGA will use a subdirectory of the settings dir `/home/ibg_settings/exported_logs`. |
 | <a name="IB_PREFER_IBKEY">`IB_PREFER_IBKEY`</a> | Set to "true" to allow automatic selection of "IB Key" when there are multiple choices of two-factor authentication devices. |
+| <a name="TOTP_KEY">`TOTP_KEY`</a> | [Automate TOTP (Mobile Authenticator App) login.](../faq.md#how-to-setup-totp-mobile-authenticator-app-automated-login) |
 
-Arguments marked with an asterisk symbol (*) are required.
+Arguments marked with an asterisk symbol (\*) are required.
 
 Note that you must write the exact value for text arguments. For instance, `IB_LOGINTAB=IB API` will work. But `IB_LOGINTAB=IBAPI` or `IB_LOGINTAB=ib api` will not. Moreover, IB Gateway starts in the English language setting by default, which you should retain. Internal IBGA scripts read UI component and distinguish one button from another based on the text. The scripts only recognize English.
 

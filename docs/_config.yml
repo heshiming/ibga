@@ -36,7 +36,7 @@ aux_links:
   "IBGA on GitHub": "//github.com/heshiming/ibga"
 aux_links_new_tab: true
 
-ga_tracking: UA-5688423-5
+#ga_tracking: UA-5688423-5
 
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
