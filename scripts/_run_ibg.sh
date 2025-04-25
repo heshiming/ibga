@@ -590,8 +590,12 @@ function __maintenance_handle_welcome {
         if [ "$OUTPUT" != "none" ]; then
             _err "!!! IB Gateway is waiting for two-factor authentication !!!\n"
         fi
-        if [ "$IB_PREFER_IBKEY" == "true" ]; then
-            local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jauthentication.bc&window_type=dialog")
+        if [ "$IB_PREFER_IBKEY" == "true" ] || [ ! -z "$TOTP_KEY" ]; then
+            local DEVICE_TO_CLICK=" IB Key"
+            if [ ! -z "$TOTP_KEY" ]; then
+                DEVICE_TO_CLICK=" Mobile Authenticator app"
+            fi
+            local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jauthentication.bf&window_type=dialog")
             if [ "$OUTPUT" != "none" ]; then
                 readarray -t COMPONENTS <<< "$OUTPUT"
                 for COMPONENT in "${COMPONENTS[@]}"; do
@@ -602,7 +606,7 @@ function __maintenance_handle_welcome {
                 done
             fi
             sleep 0.25
-            local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jauthentication.bc&window_type=dialog")
+            local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jauthentication.bf&window_type=dialog")
             if [ "$OUTPUT" != "none" ]; then
                 readarray -t COMPONENTS <<< "$OUTPUT"
                 local CIDX=-1
@@ -614,7 +618,7 @@ function __maintenance_handle_welcome {
                         CIDX="${PROPS['F2']}"
                     fi
                     if  [ "${PROPS['F1']}" == "javax.swing.JList(row)" ] && \
-                        [ "${PROPS['text']}" == " IB Key" ]; then
+                        [ "${PROPS['text']}" == "$DEVICE_TO_CLICK" ]; then
                         TIDX="${PROPS['F2']}"
                     fi
                 done
@@ -631,7 +635,7 @@ function __maintenance_handle_welcome {
                         local -A PROPS="$(_jauto_parse_props $COMPONENT)"
                         if  [ "${PROPS['F1']}" == "javax.swing.JButton" ] && \
                             [ "${PROPS['text']}" == "OK" ]; then
-                            _info "  - two-factor auth, forcing IB Key ...\n"
+                            _info "  - two-factor auth, selected $DEVICE_TO_CLICK ...\n"
                             xdotool mousemove ${PROPS["mx"]} ${PROPS["my"]} click 1
                         fi
                     done
