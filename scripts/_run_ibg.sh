@@ -547,7 +547,7 @@ function __maintenance_handle_welcome {
             local WINDOW_CLASS="twslaunch.jutils.aO"
             local OUTPUT=$(_call_jauto "get_windows?window_class=$WINDOW_CLASS&window_type=dialog")
             if [ "$OUTPUT" == "none" ]; then
-                WINDOW_CLASS="javax.swing.JDialog,twslaunch.jutils.aQ"
+                WINDOW_CLASS="twslaunch.jutils.aQ"
                 OUTPUT=$(_call_jauto "get_windows?window_class=$WINDOW_CLASS&window_type=dialog")
             fi
             if [ "$OUTPUT" != "none" ]; then
@@ -602,6 +602,7 @@ function __maintenance_handle_welcome {
                     local -A PROPS="$(_jauto_parse_props $COMPONENT)"
                     if  [ "${PROPS['F1']}" == "javax.swing.JList" ]; then
                         xdotool mousemove ${PROPS["mx"]} ${PROPS["my"]} click 1
+                        _info "  - focused on two-factor choice listbox"
                     fi
                 done
             fi
@@ -624,6 +625,7 @@ function __maintenance_handle_welcome {
                 done
                 if  [[ $CIDX -ge 0 ]] && \
                     [[ $TIDX -ge 0 ]]; then
+                    _info "  - selecting $CIDX $TIDX $DEVICE_TO_CLICK"
                     local ACTION_KEY KEY_COUNT
                     read ACTION_KEY KEY_COUNT <<< $(__calc_key_action $CIDX $TIDX)
                     if [[ $KEY_COUNT -gt 0 ]]; then
