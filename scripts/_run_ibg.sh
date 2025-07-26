@@ -487,7 +487,7 @@ function __maintenance_handle_general_warning {
 
 
 function __maintenance_handle_relogin_warning {
-    local JAUTO_ARGS="list_ui_components?window_class=twslaunch.jconnection.aW&window_type=dialog"
+    local JAUTO_ARGS="list_ui_components?window_class=twslaunch.jconnection&window_type=dialog"
     local DIALOGS=$(_call_jauto "$JAUTO_ARGS")
     if [ "$DIALOGS" != "none" ]; then
         OUTPUT=$(_call_jauto "$JAUTO_ARGS")
@@ -527,10 +527,10 @@ function __maintenance_handle_welcome {
             _info "  - welcome: $message\n"
         fi
         # handle existing session detected
-        local OUTPUT=$(_call_jauto "get_windows?window_class=twslaunch.jconnection.aM&window_type=dialog")
+        local OUTPUT=$(_call_jauto "get_windows?window_class=twslaunch.jconnection&window_type=dialog")
         if [ "$OUTPUT" != "none" ]; then
             _info "  - existing session detected, will kick it out\n"
-            local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jconnection.aM&window_type=dialog")
+            local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jconnection&window_type=dialog")
             if [ "$OUTPUT" != "none" ]; then
                 readarray -t COMPONENTS <<< "$OUTPUT"
                 for COMPONENT in "${COMPONENTS[@]}"; do
