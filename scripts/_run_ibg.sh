@@ -595,7 +595,7 @@ function __maintenance_handle_welcome {
             if [ ! -z "$TOTP_KEY" ]; then
                 DEVICE_TO_CLICK=" Mobile Authenticator app"
             fi
-            local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jauthentication.bf&window_type=dialog")
+            local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jauthentication&window_type=dialog")
             if [ "$OUTPUT" != "none" ]; then
                 readarray -t COMPONENTS <<< "$OUTPUT"
                 for COMPONENT in "${COMPONENTS[@]}"; do
@@ -607,7 +607,7 @@ function __maintenance_handle_welcome {
                 done
             fi
             sleep 0.25
-            local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jauthentication.bf&window_type=dialog")
+            local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jauthentication&window_type=dialog")
             if [ "$OUTPUT" != "none" ]; then
                 readarray -t COMPONENTS <<< "$OUTPUT"
                 local CIDX=-1
