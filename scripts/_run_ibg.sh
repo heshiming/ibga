@@ -834,6 +834,7 @@ function __maintenance_check_options {
     if [ $SETTINGS_CHANGED -eq 1 ]; then
         _info "  - option check, confirming settings change ...\n"
         xdotool mousemove $APPLY_X $APPLY_Y click 1
+        sleep 1
         __maintenance_handle_general_warning
         xdotool mousemove $OK_X $OK_Y click 1
     else
