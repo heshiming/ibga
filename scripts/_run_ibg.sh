@@ -544,14 +544,10 @@ function __maintenance_handle_welcome {
         fi
         # handle Mobile Authenticator app code
         if [ ! -z "$TOTP_KEY" ]; then
-            local WINDOW_CLASS="twslaunch.jutils.aO"
-            local OUTPUT=$(_call_jauto "get_windows?window_class=$WINDOW_CLASS&window_type=dialog")
-            if [ "$OUTPUT" == "none" ]; then
-                WINDOW_CLASS="twslaunch.jutils.aQ"
-                OUTPUT=$(_call_jauto "get_windows?window_class=$WINDOW_CLASS&window_type=dialog")
-            fi
+            local WINDOW_TRAIT="window_title=Second Factor Authentication&window_type=dialog"
+            local OUTPUT=$(_call_jauto "get_windows?$WINDOW_TRAIT")
             if [ "$OUTPUT" != "none" ]; then
-                local OUTPUT=$(_call_jauto "list_ui_components?window_class=$WINDOW_CLASS&window_type=dialog")
+                local OUTPUT=$(_call_jauto "list_ui_components?$WINDOW_TRAIT")
                 if [ "$OUTPUT" != "none" ]; then
                     _info "  - handling TOTP Mobile Authenticator\n"
                     readarray -t COMPONENTS <<< "$OUTPUT"
