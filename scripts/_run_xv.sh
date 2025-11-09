@@ -37,7 +37,7 @@ function _run_xvfb {
 
 function _run_vnc {
     CMD=/usr/bin/x11vnc
-    ARGS="-forever -rfbport 5900 -o $VNC_LOGFILE -display $DISPLAY"
+    ARGS="-forever -shared -rfbport 5900 -o $VNC_LOGFILE -display $DISPLAY"
     PWFILE="$HOME_DIR/.vnc/passwd"
     mkdir -p $HOME_DIR/.vnc
     rm -f "$PWFILE" || true
