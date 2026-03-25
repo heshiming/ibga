@@ -775,12 +775,20 @@ function __maintenance_check_options {
     for COMPONENT in "${COMPONENTS[@]}"; do
         local -A PROPS="$(_jauto_parse_props $COMPONENT)"
         if      [ "${PROPS['F1']}" == "javax.swing.JCheckBox" ] && \
-                [ "${PROPS['text']}" == "Read-Only API" ] && \
-                [ "${PROPS['selected']}" == "y" ]; then
-                SETTINGS_CHANGED=1
-                _info "  - option check, unchecking ${PROPS['text']} ...\n"
-                xdotool mousemove ${PROPS["mx"]} ${PROPS["my"]} click 1
-                sleep 0.25
+                [ "${PROPS['text']}" == "Read-Only API" ]; then
+                if  ([[ "${IB_READONLY,,}" == "y" ]] || [[ "${IB_READONLY,,}" == "yes" ]] || [[ "${IB_READONLY,,}" == "true" ]]) && \
+                    [ "${PROPS['selected']}" == "n" ]; then
+                    SETTINGS_CHANGED=1
+                    _info "  - option check, checking ${PROPS['text']} for IB_READONLY: $IB_READONLY ...\n"
+                    xdotool mousemove ${PROPS["mx"]} ${PROPS["my"]} click 1
+                    sleep 0.25
+                elif (! [[ "${IB_READONLY,,}" == "y" ]] && ! [[ "${IB_READONLY,,}" == "yes" ]] && ! [[ "${IB_READONLY,,}" == "true" ]]) && \
+                     [ "${PROPS['selected']}" == "y" ]; then
+                    SETTINGS_CHANGED=1
+                    _info "  - option check, unchecking ${PROPS['text']} for IB_READONLY: $IB_READONLY ...\n"
+                    xdotool mousemove ${PROPS["mx"]} ${PROPS["my"]} click 1
+                    sleep 0.25
+                fi
         elif    [ $NEXT_EDIT_IS_PORT -eq 0 ] && \
                 [ "${PROPS['F1']}" == "javax.swing.JLabel" ] && \
                 [ "${PROPS['text']}" == "Socket port" ]; then
