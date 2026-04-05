@@ -506,7 +506,7 @@ function __maintenance_handle_relogin_warning {
 
 function __maintenance_handle_existing_session_detected {
     # Skip if the feature is disabled (interval = 0)
-    local INTERVAL="${IBGA_RECONNECT_INTERVAL:-600}"
+    local INTERVAL="${IBGA_RECONNECT_INTERVAL:-0}"
     if [ "$INTERVAL" -eq 0 ] 2>/dev/null; then
         return
     fi
