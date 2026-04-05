@@ -504,6 +504,35 @@ function __maintenance_handle_relogin_warning {
 }
 
 
+function __maintenance_handle_existing_session_detected {
+    # Skip if the feature is disabled (interval = 0)
+    local INTERVAL="${IBGA_RECONNECT_INTERVAL:-600}"
+    if [ "$INTERVAL" -eq 0 ] 2>/dev/null; then
+        return
+    fi
+    local NOW=$(date +%s)
+    local ELAPSED=$(( NOW - ${G_LAST_RECONNECT_CHECK:-0} ))
+    if [ $ELAPSED -lt $INTERVAL ]; then
+        return
+    fi
+    G_LAST_RECONNECT_CHECK=$NOW
+    local JAUTO_ARGS="list_ui_components?window_class=twslaunch.jconnection&window_type=dialog"
+    local OUTPUT=$(_call_jauto "$JAUTO_ARGS")
+    if [ "$OUTPUT" == "none" ]; then
+        return
+    fi
+    readarray -t COMPONENTS <<< "$OUTPUT"
+    for COMPONENT in "${COMPONENTS[@]}"; do
+        local -A PROPS="$(_jauto_parse_props $COMPONENT)"
+        if  [ "${PROPS['F1']}" == "javax.swing.JButton" ] && \
+            [ "${PROPS['text']}" == "Reconnect This Session" ]; then
+            _info "  - existing session detected (periodic check), clicking Reconnect This Session ...\n"
+            xdotool mousemove ${PROPS['mx']} ${PROPS['my']} click 1
+            return
+        fi
+    done
+}
+
 function __maintenance_handle_welcome {
     local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.feature.welcome.")
     if [ "$OUTPUT" != "none" ]; then
@@ -923,6 +952,8 @@ function _maintenance_cycle {
             # The welcome box shows again during reconnecting after interruption.
             # Show its status.
             __maintenance_handle_welcome
+            # Periodically check for the "EXISTING SESSION DETECTED" dialog.
+            __maintenance_handle_existing_session_detected
             sleep 5
         else
             sleep 2
@@ -964,6 +995,7 @@ MSG="---------------------------------------------------
             G_LOGIN_FAILED=0
             G_LOGIN_AGAIN=0
             G_WELCOME_MESSAGE=""
+            G_LAST_RECONNECT_CHECK=0
             _info "• filling in login form ...\n"
             _login_toggle "$IB_LOGINTAB"
             _login_toggle "$IB_LOGINTYPE"
