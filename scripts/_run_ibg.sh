@@ -565,7 +565,9 @@ function __maintenance_handle_welcome {
                 for COMPONENT in "${COMPONENTS[@]}"; do
                     local -A PROPS="$(_jauto_parse_props $COMPONENT)"
                     if  [ "${PROPS['F1']}" == "javax.swing.JButton" ] && \
-                        [ "${PROPS['text']}" == "Continue Login" ]; then
+                        ([ "${PROPS['text']}" == "Continue Login" ] || \
+                         [ "${PROPS['text']}" == "Reconnect This Session" ]); then
+                        _info "  - clicking '${PROPS['text']}' to dismiss existing session dialog\\n"
                         xdotool mousemove ${PROPS["mx"]} ${PROPS["my"]} click 1
                     fi
                 done
