@@ -504,6 +504,42 @@ function __maintenance_handle_relogin_warning {
 }
 
 
+function __maintenance_handle_token_expired {
+    local JAUTO_ARGS="list_ui_components?window_title=GATEWAY"
+    local OUTPUT=$(_call_jauto "$JAUTO_ARGS")
+    if [ "$OUTPUT" != "none" ]; then
+        readarray -t COMPONENTS <<< "$OUTPUT"
+        local DIALOG_TEXT=''
+        local DIALOG_OK_X=0
+        local DIALOG_OK_Y=0
+        for COMPONENT in "${COMPONENTS[@]}"; do
+            local -A PROPS="$(_jauto_parse_props $COMPONENT)"
+            if  ([ "${PROPS['F1']}" == "javax.swing.JTextPane" ] || [ "${PROPS['F1']}" == "javax.swing.JLabel" ]) && \
+                [ ! -z "${PROPS['text']}" ]; then
+                DIALOG_TEXT+="${PROPS['text']}"
+            fi
+            if  [ "${PROPS['F1']}" == "javax.swing.JButton" ] && \
+                [ "${PROPS['text']}" == "OK" ]; then
+                DIALOG_OK_X="${PROPS['mx']}"
+                DIALOG_OK_Y="${PROPS['my']}"
+            fi
+        done
+        if  [[ "$DIALOG_TEXT" == *"security tokens"* ]] && [[ "$DIALOG_TEXT" == *"expired"* ]]; then
+            _info "  - token expired detected: $DIALOG_TEXT\n"
+            _info "    clicking OK at $DIALOG_OK_X,$DIALOG_OK_Y ...\n"
+            xdotool mousemove $DIALOG_OK_X $DIALOG_OK_Y click 1
+            G_LOGIN_AGAIN=1
+        elif [ ! -z "$DIALOG_OK_X" ] && [ "$DIALOG_OK_X" != "0" ]; then
+             _info "  - unexpected GATEWAY dialog detected: $DIALOG_TEXT\n"
+             _info "    clicking OK anyway ...\n"
+             xdotool mousemove $DIALOG_OK_X $DIALOG_OK_Y click 1
+             G_LOGIN_AGAIN=1
+        fi
+    fi
+}
+
+
+
 function __maintenance_handle_existing_session_detected {
     # Skip if the feature is disabled (interval = 0)
     local INTERVAL="${IBGA_RECONNECT_INTERVAL:-0}"
@@ -961,8 +997,10 @@ function _maintenance_cycle {
             sleep 2
         fi
         __maintenance_handle_relogin_warning
+        __maintenance_handle_token_expired
     done
 }
+
 
 
 function _run_ibg {
@@ -998,6 +1036,7 @@ MSG="---------------------------------------------------
             G_LOGIN_AGAIN=0
             G_WELCOME_MESSAGE=""
             G_LAST_RECONNECT_CHECK=0
+            __maintenance_handle_token_expired
             _info "• filling in login form ...\n"
             _login_toggle "$IB_LOGINTAB"
             _login_toggle "$IB_LOGINTYPE"
