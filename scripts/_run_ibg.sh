@@ -661,6 +661,29 @@ function __maintenance_handle_welcome {
             local OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jauthentication&window_type=dialog")
             if [ "$OUTPUT" != "none" ]; then
                 readarray -t COMPONENTS <<< "$OUTPUT"
+                if [ ! -z "$TOTP_KEY" ]; then
+                    local DEVICE_LIST_VISIBLE=0
+                    for COMPONENT in "${COMPONENTS[@]}"; do
+                        local -A PROPS="$(_jauto_parse_props $COMPONENT)"
+                        if [ "${PROPS['F1']}" == "javax.swing.JList" ]; then
+                            DEVICE_LIST_VISIBLE=1
+                        fi
+                    done
+                    if [ "$DEVICE_LIST_VISIBLE" == "0" ]; then
+                        for COMPONENT in "${COMPONENTS[@]}"; do
+                            local -A PROPS="$(_jauto_parse_props $COMPONENT)"
+                            if  [ "${PROPS['F1']}" == "javax.swing.JTextPane" ] && \
+                                [[ "${PROPS['text']}" == *"Change security device"* ]]; then
+                                _info "  - clicking 'Change security device' for TOTP login\n"
+                                xdotool mousemove ${PROPS["mx"]} ${PROPS["my"]} click 1
+                                sleep 1
+                                OUTPUT=$(_call_jauto "list_ui_components?window_class=twslaunch.jauthentication&window_type=dialog")
+                                readarray -t COMPONENTS <<< "$OUTPUT"
+                                break
+                            fi
+                        done
+                    fi
+                fi
                 for COMPONENT in "${COMPONENTS[@]}"; do
                     local -A PROPS="$(_jauto_parse_props $COMPONENT)"
                     if  [ "${PROPS['F1']}" == "javax.swing.JList" ]; then
@@ -1065,4 +1088,3 @@ MSG="---------------------------------------------------
         fi
     done
 }
-
