@@ -505,7 +505,13 @@ function __maintenance_handle_relogin_warning {
 
 
 function __maintenance_handle_token_expired {
-    local JAUTO_ARGS="list_ui_components?window_title=GATEWAY"
+    # The token-expired dialog is a JDialog (title "Gateway"), not a JFrame.
+    # jauto's window_title filter only matches JFrames, so window_title=GATEWAY
+    # always returns "none" for this dialog. Use window_type=dialog&is_active=1
+    # to catch the active dialog regardless of which parent window hosts it.
+    # This covers both the normal session-expiry path and the Sunday weekly
+    # token reset that fires during the nightly auto-restart.
+    local JAUTO_ARGS="list_ui_components?window_type=dialog&is_active=1"
     local OUTPUT=$(_call_jauto "$JAUTO_ARGS")
     if [ "$OUTPUT" != "none" ]; then
         readarray -t COMPONENTS <<< "$OUTPUT"
@@ -529,11 +535,6 @@ function __maintenance_handle_token_expired {
             _info "    clicking OK at $DIALOG_OK_X,$DIALOG_OK_Y ...\n"
             xdotool mousemove $DIALOG_OK_X $DIALOG_OK_Y click 1
             G_LOGIN_AGAIN=1
-        elif [ ! -z "$DIALOG_OK_X" ] && [ "$DIALOG_OK_X" != "0" ]; then
-             _info "  - unexpected GATEWAY dialog detected: $DIALOG_TEXT\n"
-             _info "    clicking OK anyway ...\n"
-             xdotool mousemove $DIALOG_OK_X $DIALOG_OK_Y click 1
-             G_LOGIN_AGAIN=1
         fi
     fi
 }
