@@ -1039,10 +1039,6 @@ MSG="---------------------------------------------------
     while true; do
         rm -f $JAUTO_INPUT
         G_FATAL_ERROR=""
-        G_PAPER_TRADING_WARNING_DONE=2
-        if [ "$IB_LOGINTYPE" == "Paper Trading" ]; then
-            G_PAPER_TRADING_WARNING_DONE=0
-        fi
         _info "• time: $(date)\n"
         _info "• starting IB Gateway ...\n"
         "$IBG_DIR/$IBG_EXEC" $IBG_ARGS &
@@ -1053,6 +1049,14 @@ MSG="---------------------------------------------------
         _wait_for_main_window
 
         while true; do
+            # Paper logins show the "not a brokerage account" warning on
+            # every login, including re-logins within the same gateway
+            # process (e.g. after the weekly token expiry), so re-arm its
+            # handler on each pass, like the other per-login flags.
+            G_PAPER_TRADING_WARNING_DONE=2
+            if [ "$IB_LOGINTYPE" == "Paper Trading" ]; then
+                G_PAPER_TRADING_WARNING_DONE=0
+            fi
             G_WELCOME_MESSAGE_DONE=0
             G_OPTION_ESSENTIAL_DONE=0
             G_LOG_EXPORT_DONE=0
