@@ -90,11 +90,28 @@ function _jauto_parse_windows {
 }
 
 
+function _jauto_escape {
+    # _jauto_escape VAR "STRING"
+    # Escape STRING for a double-quoted context and store it in VAR.
+    local _JE_S="${2//\\/\\\\}"
+    _JE_S="${_JE_S//\"/\\\"}"
+    _JE_S="${_JE_S//\$/\\\$}"
+    _JE_S="${_JE_S//\`/\\\`}"
+    printf -v "$1" '%s' "$_JE_S"
+}
+
+
 function _jauto_parse_props {
     # _jauto_parse_props "A_SINGLE_LINE_OF_COMPONENT"
     # Parse a comma-delimited line such as
     # "javax.swing.JLabel,,x:315,y:549,w:210,h:15,mx:420,my:556,text:Requesting startup parameters.."
     # and return an associative array.
+    # Callers evaluate the output with `local -A PROPS="$(...)"`, so keys and
+    # values alike must be escaped: a comma inside UI text splits it into
+    # extra fields, and any of them can carry quotes. IB Gateway 10.45's
+    # desupport notice (`... as it will be desupported on 20261215 ...
+    # <a href="https://...`) turns into a key containing `"`, which used to
+    # abort the script with "unexpected EOF while looking for matching".
     IFS="," read -ra WIN_PROPS <<< "$@"
     local -A PARSED_PROPS
     FIELD_NUM=0
@@ -104,18 +121,19 @@ function _jauto_parse_props {
         PROP_VALUE=${WIN_PROP#*":"}
         if [ $PROP_LEN -eq ${#PROP_VALUE} ]; then
             # PROP_LEN equals PROP_VALUE length means no colon, skip
+            _jauto_escape PROP_VALUE "$PROP_VALUE"
             PARSED_PROPS["F"$FIELD_NUM]=$PROP_VALUE
             continue
         fi
         PROP_KEY=${WIN_PROP:0:PROP_LEN-${#PROP_VALUE}-1}
-        # properly escape $PROP_VALUE
-        PROP_VALUE="${PROP_VALUE//\\/\\\\}"
-        PROP_VALUE="${PROP_VALUE//\"/\\\"}"
+        # properly escape $PROP_KEY and $PROP_VALUE
+        _jauto_escape PROP_KEY "$PROP_KEY"
+        _jauto_escape PROP_VALUE "$PROP_VALUE"
         PARSED_PROPS[$PROP_KEY]=$PROP_VALUE
     done
     echo '('
     for KEY in "${!PARSED_PROPS[@]}"; do
-        echo "[$KEY]=\"${PARSED_PROPS[$KEY]}\""
+        echo "[\"$KEY\"]=\"${PARSED_PROPS[$KEY]}\""
     done
     echo ')'
 }
