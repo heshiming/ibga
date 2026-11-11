@@ -111,7 +111,7 @@ Mainly the size. Switching to `xserver-xorg-video-dummy` adds about 30MB of addi
 
 ## Can I distribute IBGA as a commercial product?
 
-IBGA is available under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html){:target="_blank"} license as well as a commercial license. Users choosing to use IBGA under the free, open-source license must comply with its terms. Alternatively, users may choose to purchase a commercial license, which enables the distribution of IBGA in any form without restrictions.
+IBGA is available under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0){:target="_blank"} license as well as a commercial license. Users choosing to use IBGA under the free, open-source license must comply with its terms. Alternatively, users may choose to purchase a commercial license, which enables the distribution of IBGA in any form without restrictions.
 
 Please contact `heshiming at gmail dot com` for the commercial licensing option.
 
