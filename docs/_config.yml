@@ -1,51 +1,73 @@
 # Welcome to Jekyll!
 #
-# This config file is meant for settings that affect your whole blog, values
-# which you are expected to set up once and rarely edit after that. If you find
-# yourself editing this file very often, consider using Jekyll's data files
-# feature for the data you need to update frequently.
-#
+# This config file is meant for settings that affect your entire site, values
+# which you are expected to set up once and rarely need to edit after that.
 # For technical reasons, this file is *NOT* reloaded automatically when you use
-# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+# `bundle exec jekyll serve`. If you change this file, please restart the server process.
 
-# Site settings
-# These are used to personalize your new site. If you look in the HTML files,
-# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
-# You can create any custom variable you would like, and they will be accessible
-# in the templates via {{ site.myvariable }}.
+# Site Settings
 title: IB Gateway Automation (IBGA)
-logo: images/logo.png
-email: heshiming@gmail.com
+title_separator: "-"
+masthead_title: "IBGA"
+name: "He Shiming"
 description: >- # this means to ignore newlines until "baseurl:"
-  IB Gateway Automation (IBGA)
+  IBGA is IB Gateway in headless mode. It is a container image preloaded with
+  scripts for automating user interactions with IBG.
+logo: /images/logo.png
+locale: "en-US"
 baseurl: "/ibga" # the subpath of your site, e.g. /blog
-url: "https://heshiming.github.io" # the base hostname & protocol for your site, e.g. http://example.com
-github_username:  heshiming
+url: "https://heshiming.github.io" # the base hostname & protocol for your site
+repository: "heshiming/ibga"
 
 # Build settings
 markdown: kramdown
-remote_theme: just-the-docs/just-the-docs
+kramdown:
+  toc_levels: 2..3
+permalink: pretty
+remote_theme: "mmistakes/minimal-mistakes"
 plugins:
   - jekyll-remote-theme
+  - jekyll-include-cache
+  - jekyll-paginate
+  - jekyll-gist
   - jekyll-feed
   - jekyll-sitemap
-repository: heshiming/ibga
+  - jekyll-redirect-from
 
-color_scheme: ibga
-aux_links:
-  "IBGA on GitHub": "//github.com/heshiming/ibga"
-aux_links_new_tab: true
+# Theme settings
+minimal_mistakes_skin: "mint"
+search: true
+search_full_content: true
+lunr:
+  search_within_pages: true
+enable_copy_code_button: true
+breadcrumbs: false
+copyright: "He Shiming"
+copyright_url: "mailto:heshiming@gmail.com"
+footer:
+  links:
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/heshiming/ibga"
+
+# Front matter defaults for all pages
+defaults:
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: single
+      author_profile: false
+      share: false
+      related: false
+      read_time: false
 
 #ga_tracking: UA-5688423-5
 
-# Exclude from processing.
-# The following items will not be processed, by default. Create a custom list
-# to override the default setting.
-# exclude:
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+# Exclude from publishing.
+exclude:
+  - copywriting.txt
+  - ibga-main-copy.hemingway
+  - internet-simulation.txt
+  - notes.txt
+  - write-beyond-end-of-stream.txt

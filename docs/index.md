@@ -1,11 +1,12 @@
 ---
-layout: default
-title: Home
-description: IBGA is IB Gateway in headless mode. It is a container image preloaded with scripts for automating user interactions with IBG.
-nav_order: 0
+layout: single
+title: "IB Gateway Automation (IBGA)"
+excerpt: "IBGA is IB Gateway in headless mode. It is a container image preloaded with scripts for automating user interactions with IBG."
+classes: wide
+sidebar:
+  title: "Documentation"
+  nav: docs
 ---
-
-# IB Gateway Automation (IBGA)
 
 IBGA is <a href="https://www.interactivebrokers.com/en/trading/ibgateway-latest.php" target="_blank">IB Gateway</a> in headless mode. It is a container image preloaded with scripts for automating user interactions with IBG.
 
@@ -23,8 +24,8 @@ With TOTP (Time-based one-time password/IBKR Mobile Authenticator App) automatio
 * Automatic daily export of logs
 * Retaining of settings after an upgrade
 * A disposable container design
-* <a href="faq.html#how-to-setup-totp-mobile-authenticator-app-automated-login">Support Mobile Authenticator App automation</a> (as of Nov 3, 2024)
-* <a href="faq.html#how-is-two-factor-authentication-interactive-brokers-secure-login-system-sls-handled-in-ibga">Support two-factor authentication</a> (as of Nov 11, 2022)
+* <a href="guide/#how-to-setup-totp-mobile-authenticator-app-automated-login">Support Mobile Authenticator App automation</a> (as of Nov 3, 2024)
+* <a href="guide/#how-is-two-factor-authentication-interactive-brokers-secure-login-system-sls-handled-in-ibga">Support two-factor authentication</a> (as of Nov 11, 2022)
 
 ## Under the hood:
 * IBGA runs in a set of bash scripts.
@@ -58,3 +59,10 @@ With TOTP (Time-based one-time password/IBKR Mobile Authenticator App) automatio
           - "15800:5800"
           - "4000:4000"
 
+## Getting Started
+
+Head over to the [Guide](guide/) for the complete walkthrough: the Docker image, configuration, Docker Compose basics, running, upgrading, and the FAQ. For the full list of configuration arguments and the security guide, see the [Reference](reference/).
+
+## Contributions Welcome
+
+IBGA is open source under the <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License 2.0</a>, and contributions are welcome and not restricted in any way. Fork the <a href="https://github.com/heshiming/ibga" target="_blank">repository</a>, open a pull request, or file an issue for bugs, questions, and documentation fixes.

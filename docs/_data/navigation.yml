@@ -1,0 +1,37 @@
+main:
+  - title: Home
+    url: /
+  - title: Guide
+    url: /guide/
+  - title: Reference
+    url: /reference/
+  - title: GitHub
+    url: https://github.com/heshiming/ibga
+
+docs:
+  - title: Home
+    url: /
+  - title: Guide
+    url: /guide/
+    children:
+      - title: The IBGA Docker Image
+        url: /guide/#the-ibga-docker-image
+      - title: Configuring IBGA
+        url: /guide/#configuring-ibga-docker-compose-flavor
+      - title: Docker Compose Basics
+        url: /guide/#docker-compose-basics
+      - title: Running IBGA
+        url: /guide/#running-ibga-docker-compose-flavor
+      - title: Upgrading IBGA
+        url: /guide/#upgrading-ibga-docker-compose-flavor
+      - title: FAQ
+        url: /guide/#frequently-asked-questions
+  - title: Reference
+    url: /reference/
+    children:
+      - title: Configuration Arguments
+        url: /reference/#ibga-configuration-arguments
+      - title: Security
+        url: /reference/#security
+  - title: Search
+    url: /search/

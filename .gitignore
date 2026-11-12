@@ -4,4 +4,7 @@
 .Spotlight-V100
 .Trashes
 .vscode
+docs/_site/
+docs/.jekyll-cache/
+docs/vendor/
 

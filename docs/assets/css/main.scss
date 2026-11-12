@@ -1,0 +1,86 @@
+---
+---
+
+@import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
+
+/*
+   Site typography overrides
+   The theme default scales the root font from 16px to 22px on wide screens,
+   which reads oversized for documentation. Base is set to 15px and the
+   ramp is flattened to 16px maximum; page titles get a tighter scale.
+*/
+$doc-font-size: 15px;
+$h-size-1: 1.4em; // page title (h1)
+
+@import "minimal-mistakes"; // main partials
+
+/* The theme ramps the root font to 18/20/22px at wider breakpoints.
+   Flatten it: 15px reading text, 16px on desktop, nothing oversized. */
+html {
+  font-size: 15px;
+
+  @include breakpoint($medium) {
+    font-size: 15px;
+  }
+
+  @include breakpoint($large) {
+    font-size: 16px;
+  }
+
+  @include breakpoint($x-large) {
+    font-size: 16px;
+  }
+}
+
+/* ==========================================================================
+   Page header redesign
+   ========================================================================== */
+
+/* Anchor the page title: tighter leading, hairline rule below, more air
+   between the header and the body text */
+.page__title {
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin-bottom: 1.1em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid $border-color;
+}
+
+/* Long documentation pages need less vertical padding before sections */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 1.6em;
+}
+
+/* Keep section titles compact under their hairline rule */
+.page__content h2 {
+  padding-bottom: 0.35em;
+}
+
+/* ==========================================================================
+   Left sidebar navigation
+   ========================================================================== */
+
+/* Keep the sidebar at full opacity; the theme dims it until hover, which
+   makes the primary navigation look disabled */
+@media (min-width: 64em) {
+  .sidebar {
+    opacity: 1;
+  }
+}
+
+/* The theme's nav text is tiny (~11px section headers, ~15px links) */
+.nav__sub-title {
+  font-size: 0.95em;
+}
+.sidebar .nav__items a {
+  font-size: 1.0625em;
+}
+
+.page .page__inner-wrap {
+  padding-inline: 1em;
+}

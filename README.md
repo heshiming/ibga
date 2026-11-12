@@ -33,8 +33,8 @@ IBGA is <a href="https://www.interactivebrokers.com/en/trading/ibgateway-latest.
 * Automatic daily export of logs
 * Retaining of settings after an upgrade
 * A disposable container design
-* <a href="https://heshiming.github.io/ibga/faq.html#how-to-setup-totp-mobile-authenticator-app-automated-login">Support Mobile Authenticator App automation</a> (as of Nov 3, 2024)
-* <a href="https://heshiming.github.io/ibga/faq.html#how-is-two-factor-authentication-interactive-brokers-secure-login-system-sls-handled-in-ibga">Support two-factor authentication</a> (as of Nov 11, 2022)
+* <a href="https://heshiming.github.io/ibga/guide/#how-to-setup-totp-mobile-authenticator-app-automated-login">Support Mobile Authenticator App automation</a> (as of Nov 3, 2024)
+* <a href="https://heshiming.github.io/ibga/guide/#how-is-two-factor-authentication-interactive-brokers-secure-login-system-sls-handled-in-ibga">Support two-factor authentication</a> (as of Nov 11, 2022)
 
 ## Quick start
 
@@ -79,7 +79,7 @@ Documentation: <a href="https://heshiming.github.io/ibga/">https://heshiming.git
 
 ## Contributing
 
-Bug reports and pull requests are welcome.
+Contributions are welcome and not restricted in any way: bug reports, pull requests, documentation fixes, and questions via issues.
 
 ## License
 
